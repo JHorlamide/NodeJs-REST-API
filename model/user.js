@@ -27,6 +27,10 @@ const userSchema = new mongoose.Schema({
     maxlength: 1024,
   },
 
+  isAdmin: {
+    type: Boolean,
+  },
+
   date: {
     type: Date,
     default: Date.now,
@@ -37,6 +41,7 @@ userSchema.methods.generateAuthToken = function () {
   const payload = {
     user: {
       _id: this._id,
+      isAdmin: this.isAdmin,
     },
   };
 

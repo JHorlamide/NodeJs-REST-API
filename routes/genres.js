@@ -7,6 +7,7 @@ import {
   deleteGenre,
 } from "../controller/genres.js";
 import { auth } from "../middleware/auth.js";
+import { admin } from "../middleware/admin.js";
 
 const router = express.Router();
 
@@ -38,12 +39,11 @@ router.get("/:id", getSingleGenre);
  *  ***/
 router.patch("/:id", auth, updateGenre);
 
-
 /***
  * @route   GET /api/genre/:id
  * @desc    Delete genre
  * @access  Private
  *  ***/
-router.delete("/:id", auth, deleteGenre);
+router.delete("/:id", [auth, admin], deleteGenre);
 
 export default router;

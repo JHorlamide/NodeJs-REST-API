@@ -36,7 +36,6 @@ app.use("/api/rentals", rental);
 app.use("/api/users", user);
 app.use("/api/auth", auth);
 
-
 app.listen(PORT, () => {
   console.log(`server started on port ${PORT}`);
 });
