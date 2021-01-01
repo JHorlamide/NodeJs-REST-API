@@ -1,9 +1,10 @@
 import Joi from "joi";
 import express from "express";
-import JoiObjId from "joi-objectid";
-export const JoiObjectId = JoiObjId(Joi);
-import connectDB from "./config/db.js";
 import config from "config";
+import JoiObjId from "joi-objectid";
+import connectDB from "./config/db.js";
+import { error } from "./middleware/errorHandler.js";
+export const JoiObjectId = JoiObjId(Joi);
 
 /* Routes */
 import genres from "./routes/genres.js";
@@ -35,6 +36,7 @@ app.use("/api/movie", movie);
 app.use("/api/rentals", rental);
 app.use("/api/users", user);
 app.use("/api/auth", auth);
+app.use(error);
 
 app.listen(PORT, () => {
   console.log(`server started on port ${PORT}`);

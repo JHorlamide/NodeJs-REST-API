@@ -3,7 +3,7 @@ import {
   createRental,
   getAllRentals,
   deleteRental,
-} from "../controller/rentals.js";
+} from "../controllers/rentals.js";
 import { auth } from "../middleware/auth.js";
 
 const router = express.Router();

@@ -3,7 +3,7 @@ import {
   getAllMovies,
   createMovie,
   deleteMovie,
-} from "../controller/movies.js";
+} from "../controllers/movies.js";
 import { auth } from "../middleware/auth.js";
 
 const router = express.Router();

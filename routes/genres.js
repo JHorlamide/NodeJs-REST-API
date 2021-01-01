@@ -5,7 +5,7 @@ import {
   createGenre,
   updateGenre,
   deleteGenre,
-} from "../controller/genres.js";
+} from "../controllers/genres.js";
 import { auth } from "../middleware/auth.js";
 import { admin } from "../middleware/admin.js";
 
