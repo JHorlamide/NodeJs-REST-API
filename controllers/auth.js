@@ -1,6 +1,7 @@
-import bcrypt from "bcrypt";
 import Joi from "joi";
+import bcrypt from "bcrypt";
 import { User } from "../model/user.js";
+import { asyncMiddleware } from "../middleware/asyncMiddleware.js";
 
 const validateCredential = (credential) => {
   const schema = Joi.object({
@@ -11,8 +12,7 @@ const validateCredential = (credential) => {
   return schema.validate(credential);
 };
 
-
-export const authUser = async (req, res) => {
+export const authUser = asyncMiddleware(async (req, res) => {
   const { email, password } = req.body;
   const { error } = validateCredential({ email, password });
 
@@ -20,23 +20,16 @@ export const authUser = async (req, res) => {
     return res.status(400).send(error.details[0].message);
   }
 
-  try {
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).send("Invalide credentials, user does not exist.");
-    }
-
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res
-        .status(400)
-        .send("Invalide credentials, password in incorrect");
-    }
-
-    const token = user.generateAuthToken();
-    res.send({ token });
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).send("Internal server error");
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res.status(400).send("Invalide credentials, user does not exist.");
   }
-};
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    return res.status(400).send("Invalide credentials, password in incorrect");
+  }
+
+  const token = user.generateAuthToken();
+  res.send({ token });
+});

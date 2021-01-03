@@ -1,20 +1,90 @@
-import Joi from "joi";
-import express from "express";
 import config from "config";
+import express from "express";
+import Joi from "joi";
 import JoiObjId from "joi-objectid";
-import connectDB from "./config/db.js";
-import { error } from "./middleware/errorHandler.js";
+import winston from "winston";
+import connectDB from "./startup/db.js";
+import { routes } from "./startup/route.js";
+import winstonMongodb from "winston-mongodb";
 export const JoiObjectId = JoiObjId(Joi);
 
-/* Routes */
-import genres from "./routes/genres.js";
-import movie from "./routes/movies.js";
-import rental from "./routes/rentals.js";
-import user from "./routes/user.js";
-import auth from "./routes/auth.js";
-import customer from "./routes/custome.js";
-
 const app = express();
+
+/* Initialize routes */
+routes(app);
+
+/*
+===============================
+To enable winston logging, use: 
+===============================
+| winston.configure()
+|   OR
+| Create your custom logger with createLogger()
+*/
+
+/* Create a custom winston logger with winston.createLogger() */
+export const logger = winston.createLogger({
+  level: "info",
+  format: winston.format.json(),
+  default: { service: "user-service" },
+  transports: [
+    new winston.transports.File({ filename: "errs.log" }),
+    new winston.transports.MongoDB({
+      db: config.get("mongodbURI"),
+      level: "error",
+      options: {
+        useUnifiedTopology: true,
+      },
+    }),
+  ],
+});
+
+/*
+=============================================================
+Handling uncaughtException & unhandledRejection with winston.
+=============================================================
+// logger.exceptions.handle(
+//   new winston.transports.File({ filename: "excep_&_unhandled.log" })
+// );
+*/
+
+/*
+===========================================
+Handling uncaughtException errors manually.
+===========================================
+*/
+process.on("uncaughtException", (exception) => {
+  const uncaughtExceptionLogger = winston.createLogger({
+    level: "error",
+    format: winston.format.json(),
+    default: { service: "user-service" },
+    transports: [
+      new winston.transports.File({ filename: "uncaughtException.log" }),
+    ],
+  });
+
+  uncaughtExceptionLogger.error(exception.message, exception);
+  process.exit(1);
+});
+
+/*
+=============================================
+Handling unhandledRejection errors manually.
+=============================================
+*/
+process.on("unhandledRejection", (exception) => {
+  const unhandledRejectionLogger = winston.createLogger({
+    level: "error",
+    format: winston.format.json(),
+    default: { service: "user-service" },
+    transports: [
+      new winston.transports.File({ filename: "promiseRejection.log" }),
+    ],
+  });
+
+  unhandledRejectionLogger.error(exception.message, exception);
+  process.exit(1);
+});
 
 if (!config.get("jwtSecret")) {
   console.error("FATAL ERROR: jwtSecret is not defined.");
@@ -23,20 +93,8 @@ if (!config.get("jwtSecret")) {
 
 const PORT = process.env.PORT || 3000;
 
-/* Initialize Middleware */
-app.use(express.json());
-
 /* Connect to mongodb */
 connectDB();
-
-/* Define Routes */
-app.use("/api/genres", genres);
-app.use("/api/customer", customer);
-app.use("/api/movie", movie);
-app.use("/api/rentals", rental);
-app.use("/api/users", user);
-app.use("/api/auth", auth);
-app.use(error);
 
 app.listen(PORT, () => {
   console.log(`server started on port ${PORT}`);
