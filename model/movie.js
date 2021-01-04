@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import Joi from "joi";
 import { genreSchema } from "./genres.js";
-import { JoiObjectId } from "../app.js";
+import { JoiObjectIdValidation } from "../startup/validation.js";
 
 const moviesSChem = new mongoose.Schema({
   genre: {
@@ -34,7 +34,7 @@ const moviesSChem = new mongoose.Schema({
 
 export const validateMovie = (movie) => {
   const schema = Joi.object({
-    genreId: JoiObjectId().required(),
+    genreId: JoiObjectIdValidation().required(),
     title: Joi.string().min(5).max(50).required(),
     numberInStock: Joi.number().min(0).required(),
     dailyRentalRate: Joi.number().min(0).required(),
