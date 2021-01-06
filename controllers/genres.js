@@ -8,7 +8,7 @@ import { asyncMiddleware } from "../middleware/asyncMiddleware.js";
 ========================
 |@access: Public
 ***/
-export const getAllGenre = asyncMiddleware(async (req, res, next) => {  
+export const getAllGenre = asyncMiddleware(async (req, res, next) => {
   const genre = await Genre.find();
   res.send(genre);
 });

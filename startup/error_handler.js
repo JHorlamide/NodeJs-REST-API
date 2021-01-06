@@ -1,11 +1,11 @@
 import config from "config";
 import winston from "winston";
-import winston_mongoDB from 'winston-mongodb';
+import "winston-mongodb";
 
 /*
-===============================================
-To use winston, read npm winston documentation
-===============================================
+=============================
+Error Handling using winston
+=============================
 | winston.configure()
 */
 
@@ -28,21 +28,18 @@ export const logger = winston.createLogger({
     }),
 
     new winston.transports.File({
-      filename: 'errs.log',
-      level: 'error'
-    })
+      filename: "errs.log",
+      level: "error",
+    }),
   ],
 
   /*
-  =================================================================
+  ========================================
   Handling uncaughtException with winston
-  =================================================================
+  ========================================
   */
   exceptionHandlers: [
-    new winston.transports.Console({
-      colorize: true,
-      prettyPrint: true,
-    }),
+    new winston.transports.Console(),
 
     new winston.transports.File({
       filename: "exceptions.log",
@@ -52,15 +49,12 @@ export const logger = winston.createLogger({
   ],
 
   /*
-  =================================================================
+  ========================================
   Handling unHandleRejection with winston
-  =================================================================
+  ========================================
   */
   rejectionHandlers: [
-    new winston.transports.Console({
-      colorize: true,
-      prettyPrint: true,
-    }),
+    new winston.transports.Console(),
 
     new winston.transports.File({
       filename: "exceptions.log",
