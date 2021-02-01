@@ -1,4 +1,4 @@
 node_modules
 config
-errs
-exception
+errs.log
+exception.log
